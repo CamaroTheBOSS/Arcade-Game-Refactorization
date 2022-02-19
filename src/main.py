@@ -16,8 +16,8 @@ class Game:
         self.window = pygame.display.set_mode((1024, 720))
         self.level = None
 
-    def loadLevel(self):
-        pass
+    def loadLevel(self, file):
+        self.level = Level(file)
 
     def run(self):
         running = True
@@ -29,10 +29,11 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     print(pygame.key.name(event.key))
 
-            self.window.fill((255, 255, 255))
-
+            self.window.blit(self.level.layout, (0, 0))
+            pygame.display.flip()
 
 if __name__ == '__main__':
     game = Game()
+    game.loadLevel("1.txt")
     game.run()
 
