@@ -1,4 +1,5 @@
 import pygame
+from level import Level
 
 
 class LevelEditor:
@@ -18,7 +19,7 @@ class Game:
     def loadLevel(self):
         pass
 
-    def run(self, level):
+    def run(self):
         running = True
 
         while running:
