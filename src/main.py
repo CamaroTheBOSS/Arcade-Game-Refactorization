@@ -32,6 +32,7 @@ class Game:
             self.window.blit(self.level.layout, (0, 0))
             pygame.display.flip()
 
+
 if __name__ == '__main__':
     game = Game()
     game.loadLevel("1.txt")
