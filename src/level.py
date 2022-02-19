@@ -22,6 +22,7 @@ class Level:
         self.Key = None
         self.Doors = None
         self.color = ColorSet()
+        self.checkpointReached = False
 
         self.InterpretateFile(file)
 
