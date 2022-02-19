@@ -1,0 +1,3 @@
+layoutPath,./Levels/2.png
+playerStartPosition,110,90
+checkpointRespawnPosition,485,370
