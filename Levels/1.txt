@@ -1,3 +1,4 @@
 layoutPath,./Levels/1.png
 playerStartPosition,100,300
 checkpointRespawnPosition,900,400
+simpleEnemy,500,300,100,0,0,-100,-100,0,0,100,repeat

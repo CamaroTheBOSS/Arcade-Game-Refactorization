@@ -2,6 +2,7 @@ import pygame
 import csv
 import numpy as np
 from PIL import Image
+from enemies import *
 
 
 class ColorSet:
@@ -34,8 +35,17 @@ class Level:
                     level_np = Image.open(line[1])
                     self.layoutData = np.transpose(np.asarray(level_np), axes=(1, 0, 2))
                     self.layout = pygame.image.load(line[1]).convert()
+
                 elif line[0] == 'playerStartPosition':
                     self.playerStartPosition = (int(line[1]), int(line[2]))
+
                 elif line[0] == 'checkpointRespawnPosition':
                     self.checkpointRespawnPosition = (int(line[1]), int(line[2]))
 
+                elif line[0] == 'simpleEnemy':
+                    self.Enemies.append(SimpleEnemy(int(line[1]), int(line[2]), "./Graphics/enemy.png"))
+                    # Extrude enemy's path points coordinates
+                    temp = []
+                    for i in range(int((len(line) - 4) / 2)):
+                        temp.append([int(line[2 * i + 3]), int(line[2 * i + 4])])
+                    self.Enemies[-1].buildPath((int(line[1]), int(line[2])), temp, line[-1])

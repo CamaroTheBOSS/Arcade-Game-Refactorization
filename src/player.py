@@ -2,8 +2,8 @@ from sprite import Sprite
 
 
 class Player(Sprite):
-    def __init__(self, x, y, path):
-        super().__init__(x, y, path)
+    def __init__(self, x, y, pathImg):
+        super().__init__(x, y, pathImg)
         self.lu = None
         self.ru = None
         self.ld = None

@@ -2,8 +2,8 @@ import pygame
 
 
 class Sprite:
-    def __init__(self, x, y, path):
-        self.img = pygame.image.load(path).convert_alpha()
+    def __init__(self, x, y, pathImg):
+        self.img = pygame.image.load(pathImg).convert_alpha()
         self.hitbox = self.img.get_rect()
         self.hitbox.x = x
         self.hitbox.y = y
