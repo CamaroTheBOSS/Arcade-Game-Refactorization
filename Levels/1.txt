@@ -3,3 +3,6 @@ playerStartPosition,100,300
 checkpointRespawnPosition,900,400
 simpleEnemy,500,300,100,0,100,100,0,100,0,0,repeat
 simpleEnemy,200,300,100,0,100,100,0,100,0,0,reverse
+coin,400,350
+coin,200,600
+coin,500,200

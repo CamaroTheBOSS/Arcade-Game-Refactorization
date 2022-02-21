@@ -3,6 +3,7 @@ import csv
 import numpy as np
 from PIL import Image
 from enemies import *
+from collectable import *
 
 
 class ColorSet:
@@ -49,3 +50,7 @@ class Level:
                     for i in range(int((len(line) - 4) / 2)):
                         temp.append([int(line[2 * i + 3]), int(line[2 * i + 4])])
                     self.Enemies[-1].buildPath((int(line[1]), int(line[2])), temp, pathType=line[-1])
+
+                elif line[0] == 'coin':
+                    self.Coins.append(Coin(int(line[1]), int(line[2]), "./Graphics/coin.png"))
+

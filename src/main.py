@@ -74,7 +74,8 @@ class Game:
                 not inequality((data[self.player.rd[0], self.player.rd[1]]), self.level.color.win):
             print("WIN")
 
-    def update(self):  # Render graphics
+    def update(self):
+        # Rendering layout and player
         self.window.blit(self.level.layout, (0, 0))
         self.window.blit(self.player.img, (self.player.hitbox.x, self.player.hitbox.y))
 
@@ -82,6 +83,11 @@ class Game:
         for enemy in self.level.Enemies:
             self.window.blit(enemy.img, (enemy.hitbox.x, enemy.hitbox.y))
             enemy.nextPathPoint()
+
+        # Rendering coins
+        for coin in self.level.Coins:
+            self.window.blit(coin.img, (coin.hitbox.x, coin.hitbox.y))
+
         pygame.display.flip()
 
     def run(self):
