@@ -39,6 +39,7 @@ class Game:
         # Collisions with walls
         keys = pygame.key.get_pressed()
         data = self.level.layoutData
+        # Move only when pixels are not in specific color
         if inequality((data[self.player.ru[0] + 1, self.player.ru[1]]), self.level.color.wall) and \
                 inequality((data[self.player.rd[0] + 1, self.player.rd[1]]), self.level.color.wall):
             self.player.center[0] += keys[pygame.K_RIGHT]
@@ -80,6 +81,13 @@ class Game:
                 self.player.changePosition(self.level.playerStartPosition)
             else:
                 self.player.changePosition(self.level.checkpointRespawnPosition)
+
+        # Collisions with coins
+        CollisionIndex = self.player.hitbox.collidelist(self.level.Coins.ListOfHitboxes)
+        if CollisionIndex != -1:
+            self.level.Coins.ListOfObjects[CollisionIndex].collected = True
+            self.level.Coins.ListOfObjects[CollisionIndex].hitbox.x = -40
+            self.level.Coins.ListOfObjects[CollisionIndex].hitbox.y = -40
 
     def update(self):
         # Rendering layout and player
