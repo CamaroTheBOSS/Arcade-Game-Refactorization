@@ -105,8 +105,9 @@ class Game:
             self.window.blit(coin.img, (coin.hitbox.x, coin.hitbox.y))
 
         # Rendering doors and key
-        self.window.blit(self.level.Doors.img, (self.level.Doors.hitbox.x, self.level.Doors.hitbox.y))
-        self.window.blit(self.level.Doors.key.img, (self.level.Doors.key.hitbox.x, self.level.Doors.key.hitbox.y))
+        if self.level.Doors is not None:
+            self.window.blit(self.level.Doors.img, (self.level.Doors.hitbox.x, self.level.Doors.hitbox.y))
+            self.window.blit(self.level.Doors.key.img, (self.level.Doors.key.hitbox.x, self.level.Doors.key.hitbox.y))
 
         pygame.display.flip()
 
