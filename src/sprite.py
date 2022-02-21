@@ -58,3 +58,10 @@ class MovingSprite(Sprite):
                 self.currentPathPoint += 1
             else:
                 self.currentPathPoint -= 1
+
+
+# Class for interactive lists of objects
+class ObjectsContainer:
+    def __init__(self):
+        self.ListOfObjects = []
+        self.ListOfHitboxes = []

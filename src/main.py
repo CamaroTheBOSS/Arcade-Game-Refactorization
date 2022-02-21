@@ -74,18 +74,25 @@ class Game:
                 not inequality((data[self.player.rd[0], self.player.rd[1]]), self.level.color.win):
             print("WIN")
 
+        # Collisions with enemies
+        if self.player.hitbox.collidelist(self.level.Enemies.ListOfHitboxes) != -1:
+            if not self.level.checkpointReached:
+                self.player.changePosition(self.level.playerStartPosition)
+            else:
+                self.player.changePosition(self.level.checkpointRespawnPosition)
+
     def update(self):
         # Rendering layout and player
         self.window.blit(self.level.layout, (0, 0))
         self.window.blit(self.player.img, (self.player.hitbox.x, self.player.hitbox.y))
 
         # Rendering enemies and updating their current position
-        for enemy in self.level.Enemies:
+        for enemy in self.level.Enemies.ListOfObjects:
             self.window.blit(enemy.img, (enemy.hitbox.x, enemy.hitbox.y))
             enemy.nextPathPoint()
 
         # Rendering coins
-        for coin in self.level.Coins:
+        for coin in self.level.Coins.ListOfObjects:
             self.window.blit(coin.img, (coin.hitbox.x, coin.hitbox.y))
 
         pygame.display.flip()

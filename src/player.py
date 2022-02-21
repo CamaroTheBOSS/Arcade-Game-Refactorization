@@ -18,3 +18,9 @@ class Player(Sprite):
                    self.center[1] + int(self.size[0] / 2) - 1]
         self.rd = [self.center[0] + int(self.size[1] / 2) - 1,
                    self.center[1] + int(self.size[0] / 2) - 1]
+
+    def changePosition(self, position: list):
+        self.hitbox.x = position[0]
+        self.hitbox.y = position[1]
+        self.center[0] = self.img.get_rect().center[0] + position[0]
+        self.center[1] = self.img.get_rect().center[1] + position[1]
