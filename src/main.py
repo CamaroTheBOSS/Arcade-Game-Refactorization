@@ -1,5 +1,4 @@
 import pygame
-import numpy as np
 from level import Level
 from player import Player
 
@@ -78,7 +77,11 @@ class Game:
     def update(self):  # Render graphics
         self.window.blit(self.level.layout, (0, 0))
         self.window.blit(self.player.img, (self.player.hitbox.x, self.player.hitbox.y))
-        self.window.blit(self.level.Enemies[0].img, (self.level.Enemies[0].hitbox.x, self.level.Enemies[0].hitbox.y))
+
+        # Rendering enemies and updating their current position
+        for enemy in self.level.Enemies:
+            self.window.blit(enemy.img, (enemy.hitbox.x, enemy.hitbox.y))
+            enemy.nextPathPoint()
         pygame.display.flip()
 
     def run(self):

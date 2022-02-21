@@ -21,6 +21,8 @@ class MovingSprite(Sprite):
         self.reverse = False
 
     def buildPath(self, startPos: tuple, waypoints: list, pathType='reverse'):
+        self.pathType = pathType
+        self.pathway.append([startPos[0], startPos[1]])
         # waypoints are stored in relative form, so firstly it is needed to add enemy start position to each waypoint
         for way in waypoints:
             way[0] += startPos[0]
@@ -32,27 +34,27 @@ class MovingSprite(Sprite):
             self.pathway.append([startPos[0], startPos[1]])
 
     def nextPathPoint(self):
-        if self.hitbox.x < self.path[self.currentPathPoint][0]:
+        if self.hitbox.x < self.pathway[self.currentPathPoint][0]:
             self.hitbox.x += 1
-        elif self.hitbox.x > self.path[self.currentPathPoint][0]:
+        elif self.hitbox.x > self.pathway[self.currentPathPoint][0]:
             self.hitbox.x -= 1
-        if self.hitbox.y < self.path[self.currentPathPoint][1]:
+        if self.hitbox.y < self.pathway[self.currentPathPoint][1]:
             self.hitbox.y += 1
-        elif self.hitbox.y > self.path[self.currentPathPoint][1]:
+        elif self.hitbox.y > self.pathway[self.currentPathPoint][1]:
             self.hitbox.y -= 1
 
-        if self.hitbox.x == self.path[self.currentPathPoint][0] and \
-                self.hitbox.y == self.path[self.currentPathPoint][1]:
+        if self.hitbox.x == self.pathway[self.currentPathPoint][0] and \
+                self.hitbox.y == self.pathway[self.currentPathPoint][1]:
 
             if self.currentPathPoint == len(self.pathway) - 1:
                 if self.pathType == 'repeat':
                     self.currentPathPoint = 0
-                elif self.pathType == 'reverse':
+                else:
                     self.reverse = True
             elif self.currentPathPoint == 0:
                 self.reverse = False
 
             if not self.reverse:
-                self.waypoint += 1
+                self.currentPathPoint += 1
             else:
-                self.waypoint -= 1
+                self.currentPathPoint -= 1

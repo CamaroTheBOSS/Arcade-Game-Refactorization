@@ -48,4 +48,4 @@ class Level:
                     temp = []
                     for i in range(int((len(line) - 4) / 2)):
                         temp.append([int(line[2 * i + 3]), int(line[2 * i + 4])])
-                    self.Enemies[-1].buildPath((int(line[1]), int(line[2])), temp, line[-1])
+                    self.Enemies[-1].buildPath((int(line[1]), int(line[2])), temp, pathType=line[-1])
