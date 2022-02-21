@@ -90,6 +90,17 @@ class Game:
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.x = -40
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.y = -40
 
+        if self.level.Doors is not None:
+            # Collisions with key
+            if self.player.hitbox.collidelist([self.level.Doors.key.hitbox]) != -1:
+                self.level.Doors.key.collected = True
+                print("Klucyk")
+
+            # Collisions with doors
+            if self.player.hitbox.collidelist([self.level.Doors.hitbox]) != -1 and self.level.Doors.key.collected:
+                self.level.Doors.open = True
+                self.level.Doors = None
+
     def update(self):
         # Rendering layout and player
         self.window.blit(self.level.layout, (0, 0))
@@ -106,8 +117,12 @@ class Game:
 
         # Rendering doors and key
         if self.level.Doors is not None:
-            self.window.blit(self.level.Doors.img, (self.level.Doors.hitbox.x, self.level.Doors.hitbox.y))
-            self.window.blit(self.level.Doors.key.img, (self.level.Doors.key.hitbox.x, self.level.Doors.key.hitbox.y))
+            if not self.level.Doors.open:
+                self.window.blit(self.level.Doors.img, (self.level.Doors.hitbox.x,
+                                                        self.level.Doors.hitbox.y))
+            if not self.level.Doors.key.collected:
+                self.window.blit(self.level.Doors.key.img, (self.level.Doors.key.hitbox.x,
+                                                            self.level.Doors.key.hitbox.y))
 
         pygame.display.flip()
 

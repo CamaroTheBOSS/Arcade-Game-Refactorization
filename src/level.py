@@ -57,5 +57,5 @@ class Level:
                     self.Coins.ListOfHitboxes.append(self.Coins.ListOfObjects[-1].hitbox)
 
                 elif line[0] == 'doorsAndKey':
-                    self.Doors = Doors(int(line[1]), int(line[2]), "./Graphics/key.png",
-                                       int(line[3]), int(line[4]), "./Graphics/doors.png")
+                    self.Doors = Doors(int(line[1]), int(line[2]), "./Graphics/doors.png",
+                                       int(line[3]), int(line[4]), "./Graphics/key.png")
