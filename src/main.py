@@ -74,6 +74,7 @@ class Game:
                 not inequality((data[self.player.ld[0], self.player.ld[1]]), self.level.color.win) or \
                 not inequality((data[self.player.rd[0], self.player.rd[1]]), self.level.color.win):
             print("WIN")
+            self.loadLevel("2.txt")
 
         # Collisions with enemies
         if self.player.hitbox.collidelist(self.level.Enemies.ListOfHitboxes) != -1:
@@ -102,6 +103,10 @@ class Game:
         # Rendering coins
         for coin in self.level.Coins.ListOfObjects:
             self.window.blit(coin.img, (coin.hitbox.x, coin.hitbox.y))
+
+        # Rendering doors and key
+        self.window.blit(self.level.Doors.img, (self.level.Doors.hitbox.x, self.level.Doors.hitbox.y))
+        self.window.blit(self.level.Doors.key.img, (self.level.Doors.key.hitbox.x, self.level.Doors.key.hitbox.y))
 
         pygame.display.flip()
 

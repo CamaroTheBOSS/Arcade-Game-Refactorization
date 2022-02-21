@@ -22,7 +22,6 @@ class Level:
         self.checkpointRespawnPosition = None
         self.Enemies = ObjectsContainer()
         self.Coins = ObjectsContainer()
-        self.Key = None
         self.Doors = None
         self.color = ColorSet()
         self.checkpointReached = False
@@ -56,3 +55,7 @@ class Level:
                 elif line[0] == 'coin':
                     self.Coins.ListOfObjects.append(Coin(int(line[1]), int(line[2]), "./Graphics/coin.png"))
                     self.Coins.ListOfHitboxes.append(self.Coins.ListOfObjects[-1].hitbox)
+
+                elif line[0] == 'doorsAndKey':
+                    self.Doors = Doors(int(line[1]), int(line[2]), "./Graphics/key.png",
+                                       int(line[3]), int(line[4]), "./Graphics/doors.png")
