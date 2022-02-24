@@ -1,6 +1,7 @@
 import pygame
 from level import Level
 from player import Player
+from audio import Audio
 
 
 # function used for collision detection
@@ -23,9 +24,19 @@ class Game:
     def __init__(self):
         pygame.init()
         self.window = pygame.display.set_mode((1024, 720))
+        self.audio = Audio()
+        self.InitSounds()
+        self.audio.SetEffectsVolume(0.2)
         self.clock = pygame.time.Clock()
         self.level = None
         self.player = None
+
+    def InitSounds(self):
+        self.audio.Death = pygame.mixer.Sound("./Audio/dead.mp3")
+        self.audio.LevelWin = pygame.mixer.Sound("./Audio/win.mp3")
+        self.audio.KeyCollection = pygame.mixer.Sound("./Audio/mario_key.mp3")
+        self.audio.CoinCollection = pygame.mixer.Sound("./Audio/mario_coin.wav")
+        self.audio.DoorOpening = pygame.mixer.Sound("./Audio/door.mp3")
 
     def loadLevel(self, file):
         self.level = Level(file)
@@ -88,10 +99,12 @@ class Game:
                 not inequality((data[ld[0], ld[1]]), self.level.color.win) or \
                 not inequality((data[rd[0], rd[1]]), self.level.color.win):
             print("WIN")
+            self.audio.LevelWin.play()
             self.loadLevel("2.txt")
 
         # Collisions with enemies
         if self.player.hitbox.collidelist(self.level.Enemies.ListOfHitboxes) != -1:
+            self.audio.Death.play()
             if not self.level.checkpointReached:
                 self.player.changePosition(self.level.playerStartPosition)
             else:
@@ -100,6 +113,7 @@ class Game:
         # Collisions with coins
         CollisionIndex = self.player.hitbox.collidelist(self.level.Coins.ListOfHitboxes)
         if CollisionIndex != -1:
+            self.audio.CoinCollection.play()
             self.level.Coins.ListOfObjects[CollisionIndex].collected = True
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.x = -40
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.y = -40
@@ -108,10 +122,14 @@ class Game:
         if self.level.Doors is not None:
             # Collisions with key
             if self.player.hitbox.collidelist([self.level.Doors.key.hitbox]) != -1:
+                self.audio.KeyCollection.play()
                 self.level.Doors.key.collected = True
+                self.level.Doors.key.hitbox.x = -40
+                self.level.Doors.key.hitbox.y = -40
 
             # Collisions with doors
             if self.player.hitbox.collidelist([self.level.Doors.hitbox]) != -1 and self.level.Doors.key.collected:
+                self.audio.DoorOpening.play()
                 self.level.Doors.open = True
                 self.level.Wall(self.level.Doors, wallType="delete")
                 self.level.Doors = None
