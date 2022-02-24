@@ -105,6 +105,8 @@ class Game:
         # Collisions with enemies
         if self.player.hitbox.collidelist(self.level.Enemies.ListOfHitboxes) != -1:
             self.audio.Death.play()
+            self.player.ghost.startReplay()
+
             if not self.level.checkpointReached:
                 self.player.changePosition(self.level.playerStartPosition)
             else:
@@ -157,6 +159,16 @@ class Game:
                 self.window.blit(self.level.Doors.key.img, (self.level.Doors.key.hitbox.x,
                                                             self.level.Doors.key.hitbox.y))
 
+        # Render player's ghost
+        frame = self.player.ghost.frame
+        if self.player.ghost.isPlaying:
+            self.window.blit(self.player.ghost.img, (self.player.ghost.dataToReplay[frame][0],
+                                                     self.player.ghost.dataToReplay[frame][1]))
+            self.player.ghost.frame += 1
+            if frame == len(self.player.ghost.dataToReplay) - 1:
+                self.player.ghost.isPlaying = False
+                self.player.ghost.dataToReplay = []
+
         pygame.display.flip()
 
     def run(self):
@@ -171,6 +183,7 @@ class Game:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     print(pygame.key.name(event.key))
+            self.player.collectData()
             self.playerCollisions()
             self.update()
 

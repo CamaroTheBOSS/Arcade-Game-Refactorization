@@ -22,6 +22,3 @@ class Doors(Sprite):
         super().__init__(doorsX, doorsY, doorsPathImg)
         self.open = False
         self.key = Key(keyX, keyY, keyPathImg)
-
-
-
