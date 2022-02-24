@@ -6,4 +6,4 @@ simpleEnemy,200,300,100,0,100,100,0,100,0,0,reverse
 coin,400,350
 coin,200,600
 coin,500,200
-doorsAndKey,300,300,600,600
+doorsAndKey,800,320,600,600

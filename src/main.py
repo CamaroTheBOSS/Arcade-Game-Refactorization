@@ -38,41 +38,55 @@ class Game:
 
         # Collisions with walls
         keys = pygame.key.get_pressed()
+        ru = self.player.ru
+        rd = self.player.rd
+        lu = self.player.lu
+        ld = self.player.ld
         data = self.level.layoutData
-        # Move only when pixels are not in specific color
-        if inequality((data[self.player.ru[0] + 1, self.player.ru[1]]), self.level.color.wall) and \
-                inequality((data[self.player.rd[0] + 1, self.player.rd[1]]), self.level.color.wall):
+
+        # Move only when pixels are not in specific color and
+        # player is not colliding with solid objects like closed doors
+        if self.level.wallData[ru[0] + 1][ru[1]] != 0 and \
+                self.level.wallData[rd[0] + 1][rd[1]] != 0 and \
+                inequality(data[ru[0] + 1, ru[1]], self.level.color.wall) and \
+                inequality(data[rd[0] + 1, rd[1]], self.level.color.wall):
             self.player.center[0] += keys[pygame.K_RIGHT]
             self.player.hitbox.x += keys[pygame.K_RIGHT]
 
-        if inequality((data[self.player.lu[0] - 1, self.player.lu[1]]), self.level.color.wall) and \
-                inequality((data[self.player.ld[0] - 1, self.player.ld[1]]), self.level.color.wall):
+        if self.level.wallData[lu[0] - 1][lu[1]] != 0 and \
+                self.level.wallData[ld[0] - 1][ld[1]] != 0 and \
+                inequality(data[lu[0] - 1, lu[1]], self.level.color.wall) and \
+                inequality(data[ld[0] - 1, ld[1]], self.level.color.wall):
             self.player.center[0] -= keys[pygame.K_LEFT]
             self.player.hitbox.x -= keys[pygame.K_LEFT]
 
-        if inequality((data[self.player.ld[0], self.player.ld[1] + 1]), self.level.color.wall) and \
-                inequality((data[self.player.rd[0], self.player.rd[1] + 1]), self.level.color.wall):
+        if self.level.wallData[ld[0]][ld[1] + 1] != 0 and \
+                self.level.wallData[rd[0]][rd[1] + 1] != 0 and \
+                inequality(data[ld[0], ld[1] + 1], self.level.color.wall) and \
+                inequality(data[rd[0], rd[1] + 1], self.level.color.wall):
             self.player.center[1] += keys[pygame.K_DOWN]
             self.player.hitbox.y += keys[pygame.K_DOWN]
 
-        if inequality((data[self.player.ru[0], self.player.ru[1] - 1]), self.level.color.wall) and \
-                inequality((data[self.player.lu[0], self.player.lu[1] - 1]), self.level.color.wall):
+        if self.level.wallData[ru[0]][ru[1] - 1] != 0 and \
+                self.level.wallData[lu[0]][lu[1] - 1] != 0 and \
+                inequality(data[ru[0], ru[1] - 1], self.level.color.wall) and \
+                inequality(data[lu[0], lu[1] - 1], self.level.color.wall):
             self.player.center[1] -= keys[pygame.K_UP]
             self.player.hitbox.y -= keys[pygame.K_UP]
 
         # Collisions with checkpoints
-        if not inequality((data[self.player.ru[0], self.player.ru[1]]), self.level.color.checkpoint) or \
-                not inequality((data[self.player.lu[0], self.player.lu[1]]), self.level.color.checkpoint) or \
-                not inequality((data[self.player.ld[0], self.player.ld[1]]), self.level.color.checkpoint) or \
-                not inequality((data[self.player.rd[0], self.player.rd[1]]), self.level.color.checkpoint):
+        if not inequality((data[ru[0], ru[1]]), self.level.color.checkpoint) or \
+                not inequality((data[lu[0], lu[1]]), self.level.color.checkpoint) or \
+                not inequality((data[ld[0], ld[1]]), self.level.color.checkpoint) or \
+                not inequality((data[rd[0], rd[1]]), self.level.color.checkpoint):
             self.level.checkpointReached = True
             print("Checkpoint reached")
 
         # Collisions with win area
-        if not inequality((data[self.player.ru[0], self.player.ru[1]]), self.level.color.win) or \
-                not inequality((data[self.player.lu[0], self.player.lu[1]]), self.level.color.win) or \
-                not inequality((data[self.player.ld[0], self.player.ld[1]]), self.level.color.win) or \
-                not inequality((data[self.player.rd[0], self.player.rd[1]]), self.level.color.win):
+        if not inequality((data[ru[0], ru[1]]), self.level.color.win) or \
+                not inequality((data[lu[0], lu[1]]), self.level.color.win) or \
+                not inequality((data[ld[0], ld[1]]), self.level.color.win) or \
+                not inequality((data[rd[0], rd[1]]), self.level.color.win):
             print("WIN")
             self.loadLevel("2.txt")
 
@@ -90,15 +104,16 @@ class Game:
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.x = -40
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.y = -40
 
+        # Collisions with doorsAndKeys
         if self.level.Doors is not None:
             # Collisions with key
             if self.player.hitbox.collidelist([self.level.Doors.key.hitbox]) != -1:
                 self.level.Doors.key.collected = True
-                print("Klucyk")
 
             # Collisions with doors
             if self.player.hitbox.collidelist([self.level.Doors.hitbox]) != -1 and self.level.Doors.key.collected:
                 self.level.Doors.open = True
+                self.level.Wall(self.level.Doors, wallType="delete")
                 self.level.Doors = None
 
     def update(self):

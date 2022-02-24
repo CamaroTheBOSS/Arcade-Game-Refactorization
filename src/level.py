@@ -1,10 +1,11 @@
 import pygame
 import csv
+import cv2
 import numpy as np
 from PIL import Image
 from enemies import *
 from collectable import *
-from sprite import ObjectsContainer
+from sprite import ObjectsContainer, Sprite
 
 
 class ColorSet:
@@ -16,17 +17,28 @@ class ColorSet:
 
 class Level:
     def __init__(self, file):
-        self.layout = None
-        self.layoutData = None
+        self.layout = None  # layout picture
+        self.layoutData = None  # contains information about walls from the given layout
+        self.wallData = None  # contains information about solid objects at the layout
         self.playerStartPosition = None
         self.checkpointRespawnPosition = None
         self.Enemies = ObjectsContainer()
         self.Coins = ObjectsContainer()
         self.Doors = None
-        self.color = ColorSet()
+        self.color = ColorSet()  # used for checking win/checkpoint/collision with walls conditions
         self.checkpointReached = False
 
         self.InterpretateFile(file)
+
+    def Wall(self, solidObject: Sprite, wallType="create"):
+        x = solidObject.hitbox.x + 1
+        y = solidObject.hitbox.y + 1
+        w = solidObject.hitbox[2] - 2
+        h = solidObject.hitbox[3] - 2
+        value = 0
+        if wallType == "delete":
+            value = 255
+        self.wallData[x:x + w, y:y + h] = value
 
     def InterpretateFile(self, file):
         with open(f"./Levels/{file}") as data:
@@ -36,6 +48,8 @@ class Level:
                     level_np = Image.open(line[1])
                     self.layoutData = np.transpose(np.asarray(level_np), axes=(1, 0, 2))
                     self.layout = pygame.image.load(line[1]).convert()
+                    self.wallData = cv2.imread(line[1])
+                    self.wallData = np.transpose(cv2.cvtColor(self.wallData, cv2.COLOR_RGB2GRAY))
 
                 elif line[0] == 'playerStartPosition':
                     self.playerStartPosition = (int(line[1]), int(line[2]))
@@ -59,3 +73,5 @@ class Level:
                 elif line[0] == 'doorsAndKey':
                     self.Doors = Doors(int(line[1]), int(line[2]), "./Graphics/doors.png",
                                        int(line[3]), int(line[4]), "./Graphics/key.png")
+                    self.Wall(self.Doors)
+
