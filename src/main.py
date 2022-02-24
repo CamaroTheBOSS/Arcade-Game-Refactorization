@@ -2,6 +2,7 @@ import pygame
 from level import Level
 from player import Player
 from audio import Audio
+from HUD import GameHUD
 
 
 # function used for collision detection
@@ -23,13 +24,15 @@ class Menu:
 class Game:
     def __init__(self):
         pygame.init()
-        self.window = pygame.display.set_mode((1024, 720))
+        self.window = pygame.display.set_mode((1024, 820))
         self.audio = Audio()
         self.InitSounds()
         self.audio.SetEffectsVolume(0.2)
         self.clock = pygame.time.Clock()
+        self.font = pygame.font.SysFont('Calibri', 30, bold=True)
         self.level = None
         self.player = None
+        self.HUD = GameHUD()
 
     def InitSounds(self):
         self.audio.Death = pygame.mixer.Sound("./Audio/dead.mp3")
@@ -105,6 +108,7 @@ class Game:
         # Collisions with enemies
         if self.player.hitbox.collidelist(self.level.Enemies.ListOfHitboxes) != -1:
             self.audio.Death.play()
+            self.HUD.updateDeathCounter()
             self.player.ghost.startReplay()
 
             if not self.level.checkpointReached:
@@ -116,6 +120,7 @@ class Game:
         CollisionIndex = self.player.hitbox.collidelist(self.level.Coins.ListOfHitboxes)
         if CollisionIndex != -1:
             self.audio.CoinCollection.play()
+            self.HUD.updateScore(100)
             self.level.Coins.ListOfObjects[CollisionIndex].collected = True
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.x = -40
             self.level.Coins.ListOfObjects[CollisionIndex].hitbox.y = -40
@@ -138,6 +143,7 @@ class Game:
 
     def update(self):
         # Rendering layout and player
+        self.window.fill((0, 0, 0))
         self.window.blit(self.level.layout, (0, 0))
         self.window.blit(self.player.img, (self.player.hitbox.x, self.player.hitbox.y))
 
@@ -169,6 +175,10 @@ class Game:
                 self.player.ghost.isPlaying = False
                 self.player.ghost.dataToReplay = []
 
+        # Render HUD
+        for i, text in enumerate(self.HUD.ScoreDeathTimeHUDRepresentation.textToRender):
+            self.window.blit(text, (50+i*400, 760))
+
         pygame.display.flip()
 
     def run(self):
@@ -177,12 +187,14 @@ class Game:
         # Main game loop
         while running:
             self.clock.tick(60 * 3)
+            self.HUD.updateTimer(1 / (60 * 3))
             # Check for events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     print(pygame.key.name(event.key))
+            self.HUD.updateText(self.font)
             self.player.collectData()
             self.playerCollisions()
             self.update()
