@@ -1,3 +1,5 @@
+
+
 class HUDelement:
     def __init__(self):
         self.textToRender = []
@@ -25,3 +27,8 @@ class GameHUD:
             font.render(f"Deaths: {self.deathCounter}", False, (255, 255, 255)),
             font.render(f"Time: %.2f" % self.timer, False, (255, 255, 255))
         ]
+
+
+class EditorHUD:
+    def __init__(self):
+        pass

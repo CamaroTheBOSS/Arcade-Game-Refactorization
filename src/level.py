@@ -15,16 +15,21 @@ class ColorSet:
         self.checkpoint = np.array([255, 127, 39, 255])  # Orange
 
 
-class Level:
-    def __init__(self, file):
+class LevelTemplate:
+    def __init__(self):
         self.layout = None  # layout picture
-        self.layoutData = None  # contains information about walls from the given layout
-        self.wallData = None  # contains information about solid objects at the layout
         self.playerStartPosition = None
         self.checkpointRespawnPosition = None
         self.Enemies = ObjectsContainer()
         self.Coins = ObjectsContainer()
         self.Doors = None
+
+
+class Level(LevelTemplate):
+    def __init__(self, file):
+        super().__init__()
+        self.layoutData = None  # contains information about walls from the given layout
+        self.wallData = None  # contains information about solid objects at the layout
         self.color = ColorSet()  # used for checking win/checkpoint/collision with walls conditions
         self.checkpointReached = False
 
@@ -75,3 +80,10 @@ class Level:
                                        int(line[3]), int(line[4]), "./Graphics/key.png")
                     self.Wall(self.Doors)
 
+
+class LevelToEdit(LevelTemplate):
+    def __init__(self):
+        super().__init__()
+
+    def SaveLevel(self, name: str):
+        pass
