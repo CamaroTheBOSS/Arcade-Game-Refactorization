@@ -1,5 +1,3 @@
-import pygame
-
 class HUDelement:
     def __init__(self):
         self.textToRender = []
