@@ -6,7 +6,6 @@ from audio import Audio
 from HUD import GameHUD, HUDelement
 
 
-
 # function used for collision detection
 def inequality(a: list, b: list):
     for i in range(b.__len__()):
@@ -23,6 +22,17 @@ class PyWindow:
         self.menuWindow = Menu()
         self.levelEditor = LevelEditor()
         self.summaryWindow = SummaryWindow(self.window)
+
+    def loadAndRunLevel(self, File):
+        self.gameWindow.loadLevel(File)
+        self.gameWindow.run()
+
+    def showSummaryWindow(self):
+        self.summaryWindow.SetAttributes(self.gameWindow.HUD.score,
+                                         self.gameWindow.HUD.deathCounter,
+                                         self.gameWindow.HUD.timer)
+        self.summaryWindow.SetText(self.gameWindow.font)
+        self.summaryWindow.show()
 
 
 class LevelEditor:
@@ -94,6 +104,9 @@ class Game:
         self.player = Player(self.level.playerStartPosition[0],
                              self.level.playerStartPosition[1],
                              "./Graphics/player.png")
+        self.HUD.score = 0
+        self.HUD.deathCounter = 0
+        self.HUD.timer = 0
 
     def playerCollisions(self):
         self.player.calculateCornerCoordinates()
@@ -249,19 +262,11 @@ class Game:
 
 
 if __name__ == '__main__':
-    windows = PyWindow()
-    game = windows.gameWindow
-    summary = windows.summaryWindow
+    app = PyWindow()
 
-    game.loadLevel("1.txt")
-    game.run()
-
-    summary.SetAttributes(game.HUD.score, game.HUD.deathCounter, game.HUD.timer)
-    summary.SetText(game.font)
-    summary.show()
-
-    game.loadLevel("2.txt")
-    game.run()
+    app.loadAndRunLevel("1.txt")
+    app.showSummaryWindow()
+    app.loadAndRunLevel("2.txt")
 
 
 
