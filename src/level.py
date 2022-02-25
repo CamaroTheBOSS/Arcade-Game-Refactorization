@@ -85,5 +85,8 @@ class LevelToEdit(LevelTemplate):
     def __init__(self):
         super().__init__()
 
-    def SaveLevel(self, name: str):
+    def setLayout(self, pathToLayout):
+        self.layout = pygame.image.load(pathToLayout).convert()
+
+    def saveLevel(self, name: str):
         pass

@@ -31,9 +31,9 @@ class Menu:
 
 if __name__ == '__main__':
     app = PyWindow()
-    # app.levelEditor.run()
+    app.levelEditor.run()
 
-    app.loadAndRunLevel("1.txt")
-    app.showSummaryWindow()
-    app.loadAndRunLevel("2.txt")
-    app.showSummaryWindow()
+    # app.loadAndRunLevel("1.txt")
+    # app.showSummaryWindow()
+    # app.loadAndRunLevel("2.txt")
+    # app.showSummaryWindow()
