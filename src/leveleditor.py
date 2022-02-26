@@ -15,7 +15,7 @@ class LevelEditor:
         self.font = pygame.font.SysFont('Calibri', 30, bold=True)
 
         # Selection variables
-        self.selection = pygame.image.load("./Graphics/select32x32.png").convert()
+        self.selection = pygame.image.load("./Graphics/select32x32.png").convert_alpha()
 
         # Buttons
         smallFont = pygame.font.SysFont('Calibri', 18)

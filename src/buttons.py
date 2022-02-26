@@ -130,4 +130,3 @@ class DraggingObjectButton(Button):
 class EnemyButton(DraggingObjectButton):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
-
