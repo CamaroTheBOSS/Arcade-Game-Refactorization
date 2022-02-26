@@ -1,7 +1,7 @@
 import sys
 import pygame
 from level import LevelToEdit
-from buttons import ImportLayoutButton, AddEnemyButton
+from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton
 
 
 class LevelEditor:
@@ -17,10 +17,14 @@ class LevelEditor:
         # Selection variables
         self.selection = pygame.image.load("./Graphics/select32x32.png").convert_alpha()
 
+        # Draggable objects container
+        self.draggable = []
+
         # Buttons
         smallFont = pygame.font.SysFont('Calibri', 18)
         self.importLayout = ImportLayoutButton(390, 100, "./Graphics/button.png", "Import layout", self.font, 40, 16)
         self.enemyAdder = AddEnemyButton(10, 730, "./Graphics/enemy.png", "Add enemy", smallFont, 40, 10)
+        self.coinAdder = AddCoinButton(10, 775, "./Graphics/coin.png", "Add coin", smallFont, 40, 10)
 
         # Level's data to save
         self.level = LevelToEdit()
@@ -40,7 +44,15 @@ class LevelEditor:
         newEnemy = self.enemyAdder.leftClickDown(event)
         if newEnemy:
             self.level.Enemies.ListOfObjects.append(newEnemy)
+            self.draggable.append(newEnemy)
             print("Enemy has been added")
+
+    def addCoinEvent(self, event):
+        newCoin = self.coinAdder.leftClickDown(event)
+        if newCoin:
+            self.level.Coins.ListOfObjects.append(newCoin)
+            self.draggable.append(newCoin)
+            print("Coin has been added")
 
     def update(self):
         self.window.fill((0, 0, 0))
@@ -51,12 +63,16 @@ class LevelEditor:
         else:
             self.window.blit(self.level.layout, (0, 0))
 
-        # Render button for adding enemies and enemies
+        # Render buttons for adding enemies and coins
         self.enemyAdder.show(self.window)
-        for enemy in self.level.Enemies.ListOfObjects:
-            if enemy.selected:
-                self.window.blit(self.selection, (enemy.hitbox.x - 6, enemy.hitbox.y - 6))
-            self.window.blit(enemy.img, (enemy.hitbox.x, enemy.hitbox.y))
+        self.coinAdder.show(self.window)
+
+        # Render enemies, coins and selection
+        reverse = self.draggable.copy().__reversed__()
+        for draggable in reverse:
+            if draggable.selected:
+                self.window.blit(self.selection, (draggable.hitbox.x - 6, draggable.hitbox.y - 6))
+            self.window.blit(draggable.img, (draggable.hitbox.x, draggable.hitbox.y))
 
         pygame.display.flip()
 
@@ -72,19 +88,20 @@ class LevelEditor:
                     sys.exit()
                 self.addLayoutEvent(event)
                 self.addEnemyEvent(event)
+                self.addCoinEvent(event)
 
                 # Enemy dragging implementation
-                for i, enemy in enumerate(self.level.Enemies.ListOfObjects):
+                for i, draggable in enumerate(self.draggable):
                     # 1. leftClickHold returns 1 if enemy is dragged, so first step is to catch this value and
                     # check whether it is equal to 1
-                    dragging = enemy.leftClickHold()
-                    enemy.rightClickDown(event)
-                    enemy.leftClickRelease(event)
+                    dragging = draggable.leftClickHold()
+                    draggable.rightClickDown(event)
+                    draggable.leftClickRelease(event)
 
                     if dragging:
                         # 2. If enemy is dragged, drag him to the start of the list of enemies
-                        self.level.Enemies.ListOfObjects.insert(0, enemy)
-                        del self.level.Enemies.ListOfObjects[i + 1]
+                        self.draggable.insert(0, draggable)
+                        del self.draggable[i + 1]
                         break
 
             self.update()

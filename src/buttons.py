@@ -108,6 +108,14 @@ class AddEnemyButton(Button):
         return EnemyButton(0, 0, "./Graphics/enemy.png")
 
 
+class AddCoinButton(Button):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+    def onLeftClickDown(self):
+        return CoinButton(0, 0, "./Graphics/coin.png")
+
+
 class DraggingObjectButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
@@ -128,5 +136,10 @@ class DraggingObjectButton(Button):
 
 
 class EnemyButton(DraggingObjectButton):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class CoinButton(DraggingObjectButton):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
