@@ -127,6 +127,7 @@ class DeleteButton(Button):
         return 1
 
 
+# Class for objects we can drag
 class DraggingObjectButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
@@ -145,12 +146,8 @@ class DraggingObjectButton(Button):
         return 1
 
 
-class EnemyButton(DraggingObjectButton):
-    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
-        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
-
-
-class CoinButton(DraggingObjectButton):
+# Class for deletable objects like coins and enemies
+class Deletable(DraggingObjectButton):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
 
@@ -166,5 +163,15 @@ class KeyButton(DraggingObjectButton):
 
 
 class DoorsButton(DraggingObjectButton):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class EnemyButton(Deletable):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class CoinButton(Deletable):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)

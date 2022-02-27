@@ -2,7 +2,7 @@ import sys
 import pygame
 from level import LevelToEdit
 from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton, \
-    DeleteButton, EnemyButton, CoinButton
+    DeleteButton, Deletable
 
 
 class LevelEditor:
@@ -14,13 +14,13 @@ class LevelEditor:
         self.clock = pygame.time.Clock()
         self.running = False
         self.font = pygame.font.SysFont('Calibri', 30, bold=True)
+        self.smallFont = pygame.font.SysFont('Calibri', 18)
 
         # Buttons
-        smallFont = pygame.font.SysFont('Calibri', 18)
         self.importLayout = ImportLayoutButton(390, 100, "./Graphics/button.png", "Import layout", self.font, 40, 16)
-        self.enemyAdder = AddEnemyButton(10, 730, "./Graphics/enemy.png", "Add enemy", smallFont, 40, 10)
-        self.coinAdder = AddCoinButton(10, 775, "./Graphics/coin.png", "Add coin", smallFont, 40, 10)
-        self.deleteButton = DeleteButton(300, 752, "./Graphics/delete.png", "Delete object", smallFont, 40, 10)
+        self.enemyAdder = AddEnemyButton(10, 730, "./Graphics/enemy.png", "Add enemy", self.smallFont, 40, 10)
+        self.coinAdder = AddCoinButton(10, 775, "./Graphics/coin.png", "Add coin", self.smallFont, 40, 10)
+        self.deleteButton = DeleteButton(200, 775, "./Graphics/delete.png", "Delete object", self.smallFont, 40, 10)
         self.playerButton = PlayerButton(100, 100, "./Graphics/player.png")
         self.keyButton = KeyButton(100, 150, "./Graphics/key.png")
         self.doorsButton = DoorsButton(100, 200, "./Graphics/doors.png")
@@ -62,13 +62,19 @@ class LevelEditor:
         if self.deleteButton.leftClickDown(event):
             for i, draggable in enumerate(self.draggable):
                 if draggable.selected:
-                    del self.draggable[i]
-                    break
+                    if isinstance(draggable, Deletable):
+                        del self.draggable[i]
+                        break
 
             for i, selectable in enumerate(self.selectable):
                 if selectable.selected:
-                    del self.selectable[i]
-                    break
+                    if isinstance(selectable, Deletable):
+                        del self.selectable[i]
+                        break
+
+    def writeCoordOfSelected(self, selected):
+        self.window.blit(self.smallFont.render(f"X: {selected.hitbox.x}", False, (255, 255, 255)), (200, 742))
+        self.window.blit(self.smallFont.render(f"Y: {selected.hitbox.y}", False, (255, 255, 255)), (250, 742))
 
     def draggingEvent(self, event):
         # Enemy dragging implementation
@@ -107,17 +113,19 @@ class LevelEditor:
         # Render buttons for adding enemies and coins
         self.enemyAdder.show(self.window)
         self.coinAdder.show(self.window)
-        self.deleteButton.show(self.window)
 
         # Render draggable
         reverse = self.draggable.copy().__reversed__()
         for draggable in reverse:
             self.window.blit(draggable.img, (draggable.hitbox.x, draggable.hitbox.y))
 
-        # Render selection
+        # Render selection and selection HUD
         for selectable in self.selectable:
             if selectable.selected:
                 self.window.blit(self.selectPNG, (selectable.hitbox.x - 6, selectable.hitbox.y - 6))
+                self.writeCoordOfSelected(selectable)
+                if isinstance(selectable, Deletable):
+                    self.deleteButton.show(self.window)
 
         pygame.display.flip()
 
