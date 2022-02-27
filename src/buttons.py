@@ -64,7 +64,7 @@ class Button(Sprite):
                 if self.hitbox.collidepoint(x, y):
                     return self.onRightClickDown()
                 else:
-                    self.selected = False
+                    self.onSelecting()
         return 0
 
     def onLeftClickDown(self):
@@ -74,6 +74,9 @@ class Button(Sprite):
         return 0
 
     def onDragging(self):
+        return 0
+
+    def onSelecting(self):
         return 0
 
     def onLeftClickUp(self):
@@ -131,7 +134,6 @@ class DraggingObjectButton(Button):
         return 1
 
     def onRightClickDown(self):
-        self.selected = True
         return 1
 
 
@@ -141,5 +143,20 @@ class EnemyButton(DraggingObjectButton):
 
 
 class CoinButton(DraggingObjectButton):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class PlayerButton(DraggingObjectButton):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class KeyButton(DraggingObjectButton):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class DoorsButton(DraggingObjectButton):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
