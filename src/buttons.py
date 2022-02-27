@@ -119,6 +119,14 @@ class AddCoinButton(Button):
         return CoinButton(0, 0, "./Graphics/coin.png")
 
 
+class DeleteButton(Button):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+    def onLeftClickDown(self):
+        return 1
+
+
 class DraggingObjectButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)

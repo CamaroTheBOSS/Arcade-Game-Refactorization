@@ -1,7 +1,8 @@
 import sys
 import pygame
 from level import LevelToEdit
-from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton
+from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton, \
+    DeleteButton, EnemyButton, CoinButton
 
 
 class LevelEditor:
@@ -14,16 +15,15 @@ class LevelEditor:
         self.running = False
         self.font = pygame.font.SysFont('Calibri', 30, bold=True)
 
-        # Selection variables
-
         # Buttons
         smallFont = pygame.font.SysFont('Calibri', 18)
         self.importLayout = ImportLayoutButton(390, 100, "./Graphics/button.png", "Import layout", self.font, 40, 16)
         self.enemyAdder = AddEnemyButton(10, 730, "./Graphics/enemy.png", "Add enemy", smallFont, 40, 10)
         self.coinAdder = AddCoinButton(10, 775, "./Graphics/coin.png", "Add coin", smallFont, 40, 10)
+        self.deleteButton = DeleteButton(300, 752, "./Graphics/delete.png", "Delete object", smallFont, 40, 10)
         self.playerButton = PlayerButton(100, 100, "./Graphics/player.png")
-        self.keyButton = PlayerButton(100, 150, "./Graphics/key.png")
-        self.doorsButton = PlayerButton(100, 200, "./Graphics/doors.png")
+        self.keyButton = KeyButton(100, 150, "./Graphics/key.png")
+        self.doorsButton = DoorsButton(100, 200, "./Graphics/doors.png")
 
         # Draggable and selectable objects containers
         self.draggable = [self.playerButton,  self.keyButton, self.doorsButton]
@@ -47,7 +47,6 @@ class LevelEditor:
     def addEnemyEvent(self, event):
         newEnemy = self.enemyAdder.leftClickDown(event)
         if newEnemy:
-            self.level.Enemies.ListOfObjects.append(newEnemy)
             self.draggable.append(newEnemy)
             self.selectable.append(newEnemy)
             print("Enemy has been added")
@@ -55,10 +54,21 @@ class LevelEditor:
     def addCoinEvent(self, event):
         newCoin = self.coinAdder.leftClickDown(event)
         if newCoin:
-            self.level.Coins.ListOfObjects.append(newCoin)
             self.draggable.append(newCoin)
             self.selectable.append(newCoin)
             print("Coin has been added")
+
+    def deleteObjectEvent(self, event):
+        if self.deleteButton.leftClickDown(event):
+            for i, draggable in enumerate(self.draggable):
+                if draggable.selected:
+                    del self.draggable[i]
+                    break
+
+            for i, selectable in enumerate(self.selectable):
+                if selectable.selected:
+                    del self.selectable[i]
+                    break
 
     def draggingEvent(self, event):
         # Enemy dragging implementation
@@ -82,8 +92,8 @@ class LevelEditor:
                     element.selected = False
                 selectable.selected = True
                 self.selectable.reverse()
-
-                break
+                return 1
+        return 0
 
     def update(self):
         self.window.fill((0, 0, 0))
@@ -97,6 +107,7 @@ class LevelEditor:
         # Render buttons for adding enemies and coins
         self.enemyAdder.show(self.window)
         self.coinAdder.show(self.window)
+        self.deleteButton.show(self.window)
 
         # Render draggable
         reverse = self.draggable.copy().__reversed__()
@@ -125,5 +136,6 @@ class LevelEditor:
                 self.addCoinEvent(event)
                 self.draggingEvent(event)
                 self.selectingEvent(event)
+                self.deleteObjectEvent(event)
 
             self.update()
