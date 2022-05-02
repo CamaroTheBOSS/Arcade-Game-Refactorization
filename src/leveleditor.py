@@ -2,7 +2,7 @@ import sys
 import pygame
 from level import LevelToEdit
 from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton, \
-    DeleteButton, Deletable
+    DeleteButton, Deletable, AddPathPointButton, EnemyButton, PathPoint, SwitchPathTypeButton
 
 
 class LevelEditor:
@@ -19,6 +19,10 @@ class LevelEditor:
         # Buttons
         self.importLayout = ImportLayoutButton(390, 100, "./Graphics/button.png", "Import layout", self.font, 40, 16)
         self.enemyAdder = AddEnemyButton(10, 730, "./Graphics/enemy.png", "Add enemy", self.smallFont, 40, 10)
+        self.pathPointAdder = AddPathPointButton(200, 730, "./Graphics/pathPointAdd.png", "Add path point",
+                                                 self.smallFont, 40, 10)
+        self.switchPathTypeButton = SwitchPathTypeButton(500, 730, "./Graphics/switchPathType.png", "Change path type",
+                                                         self.smallFont, 40, 10)
         self.coinAdder = AddCoinButton(10, 775, "./Graphics/coin.png", "Add coin", self.smallFont, 40, 10)
         self.deleteButton = DeleteButton(200, 775, "./Graphics/delete.png", "Delete object", self.smallFont, 40, 10)
         self.playerButton = PlayerButton(100, 100, "./Graphics/player.png")
@@ -51,6 +55,27 @@ class LevelEditor:
             self.selectable.append(newEnemy)
             print("Enemy has been added")
 
+    def switchPathTypeEvent(self, event):
+        switch = self.switchPathTypeButton.leftClickDown(event)
+        if switch:
+            for selectable in self.selectable:
+                if selectable.selected:
+                    if isinstance(selectable, EnemyButton):
+                        selectable.path.switchPathType()
+                    elif isinstance(selectable, PathPoint):
+                        selectable.owner.path.switchPathType()
+
+    def addPathPointEvent(self, event):
+        newPathPoint = self.pathPointAdder.leftClickDown(event)
+        if newPathPoint:
+            for selectable in self.selectable:
+                if selectable.selected and isinstance(selectable, EnemyButton):
+                    point = selectable.path.addPoint()
+                    self.selectable.append(point)
+                    self.draggable.append(point)
+                    print("Path point has been added")
+                    return None
+
     def addCoinEvent(self, event):
         newCoin = self.coinAdder.leftClickDown(event)
         if newCoin:
@@ -60,21 +85,36 @@ class LevelEditor:
 
     def deleteObjectEvent(self, event):
         if self.deleteButton.leftClickDown(event):
+            p = None
             for i, draggable in enumerate(self.draggable):
                 if draggable.selected:
                     if isinstance(draggable, Deletable):
+                        if isinstance(draggable, PathPoint):
+                            p = draggable
+                            draggable.owner.path.pathPoints.remove(draggable)
                         del self.draggable[i]
                         break
 
             for i, selectable in enumerate(self.selectable):
                 if selectable.selected:
                     if isinstance(selectable, Deletable):
+                        if isinstance(selectable, EnemyButton):
+                            for point in  selectable.path.pathPoints.copy():
+                                if point in selectable.path.pathPoints:
+                                    selectable.path.pathPoints.remove(point)
+                                if point in self.draggable:
+                                    self.draggable.remove(point)
+                                if point in self.selectable:
+                                    self.selectable.remove(point)
                         del self.selectable[i]
                         break
+            if p is not None:
+                p.owner.selected = True
+                del p
 
     def writeCoordOfSelected(self, selected):
-        self.window.blit(self.smallFont.render(f"X: {selected.hitbox.x}", False, (255, 255, 255)), (200, 742))
-        self.window.blit(self.smallFont.render(f"Y: {selected.hitbox.y}", False, (255, 255, 255)), (250, 742))
+        self.window.blit(self.smallFont.render(f"X: {selected.hitbox.x}", False, (255, 255, 255)), (350, 742))
+        self.window.blit(self.smallFont.render(f"Y: {selected.hitbox.y}", False, (255, 255, 255)), (400, 742))
 
     def draggingEvent(self, event):
         # Enemy dragging implementation
@@ -96,6 +136,16 @@ class LevelEditor:
             if selecting:
                 for element in self.selectable:
                     element.selected = False
+                    if isinstance(selectable, EnemyButton):
+                        if isinstance(element, PathPoint):
+
+                            if element in selectable.path.pathPoints:
+                                element.rendered = True
+                            else:
+                                element.rendered = False
+                if isinstance(selectable, PathPoint):
+                    for point in selectable.owner.path.pathPoints:
+                        point.rendered = True
                 selectable.selected = True
                 self.selectable.reverse()
                 return 1
@@ -117,7 +167,8 @@ class LevelEditor:
         # Render draggable
         reverse = self.draggable.copy().__reversed__()
         for draggable in reverse:
-            self.window.blit(draggable.img, (draggable.hitbox.x, draggable.hitbox.y))
+            if not isinstance(draggable, PathPoint):
+                self.window.blit(draggable.img, (draggable.hitbox.x, draggable.hitbox.y))
 
         # Render selection and selection HUD
         for selectable in self.selectable:
@@ -126,6 +177,22 @@ class LevelEditor:
                 self.writeCoordOfSelected(selectable)
                 if isinstance(selectable, Deletable):
                     self.deleteButton.show(self.window)
+                    if isinstance(selectable, EnemyButton) or isinstance(selectable, PathPoint):
+                        self.switchPathTypeButton.show(self.window)
+                        self.pathPointAdder.show(self.window)
+                        enemy = selectable.owner if isinstance(selectable, PathPoint) else selectable
+                        if enemy.path.pathType == "repeat":
+                            pygame.draw.line(self.window, (255, 100, 20), enemy.path.pathPoints[0].center,
+                                             enemy.path.pathPoints[-1].center)
+                        for i in range(len(enemy.path.pathPoints) - 1):
+                            point1 = enemy.path.pathPoints[i]
+                            point2 = enemy.path.pathPoints[i + 1]
+                            pygame.draw.line(self.window, (255, 100, 20), point1.center, point2.center)
+                            self.window.blit(point2.img, (point2.hitbox.x, point2.hitbox.y))
+                            self.window.blit(self.font.render(f"{i + 1}", False, (80, 20, 255)),
+                                             (point2.center[0] - 6, point2.center[1] - 14))
+
+
 
         pygame.display.flip()
 
@@ -142,8 +209,10 @@ class LevelEditor:
                 self.addLayoutEvent(event)
                 self.addEnemyEvent(event)
                 self.addCoinEvent(event)
+                self.addPathPointEvent(event)
                 self.draggingEvent(event)
                 self.selectingEvent(event)
                 self.deleteObjectEvent(event)
+                self.switchPathTypeEvent(event)
 
             self.update()

@@ -91,6 +91,12 @@ class Button(Sprite):
         self.center[0] = self.img.get_rect().center[0] + position[0]
         self.center[1] = self.img.get_rect().center[1] + position[1]
 
+    def changePos(self, position: list):
+        self.hitbox.x -= position[0]
+        self.hitbox.y -= position[1]
+        self.center[0] -= position[0]
+        self.center[1] -= position[1]
+
 
 class ImportLayoutButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
@@ -111,6 +117,14 @@ class AddEnemyButton(Button):
         return EnemyButton(0, 0, "./Graphics/enemy.png")
 
 
+class AddPathPointButton(Button):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+    def onLeftClickDown(self):
+        return 1
+
+
 class AddCoinButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
@@ -120,6 +134,14 @@ class AddCoinButton(Button):
 
 
 class DeleteButton(Button):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+    def onLeftClickDown(self):
+        return 1
+
+
+class SwitchPathTypeButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
 
@@ -167,11 +189,79 @@ class DoorsButton(DraggingObjectButton):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
 
 
-class EnemyButton(Deletable):
-    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
-        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
-
-
 class CoinButton(Deletable):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class EnemyButton(Deletable):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+        self.path = PathChain(x, y, self)
+
+    def onLeftClickHold(self):
+        x, y = pygame.mouse.get_pos()
+        dx = self.hitbox.x - x + self.hitbox[2] / 2
+        dy = self.hitbox.y - y + self.hitbox[3] / 2
+
+        self.setPos([x - self.hitbox[2] / 2, y - self.hitbox[3] / 2])
+        for pathPoint in self.path.pathPoints:
+            pathPoint.changePos([dx, dy])
+
+        return 1
+
+    def onDragging(self):
+        x, y = pygame.mouse.get_pos()
+        dx = self.hitbox.x - x + self.hitbox[2] / 2
+        dy = self.hitbox.y - y + self.hitbox[3] / 2
+
+        self.setPos([x - self.hitbox[2] / 2, y - self.hitbox[3] / 2])
+        for pathPoint in self.path.pathPoints:
+            pathPoint.changePos([dx, dy])
+
+        return 1
+
+
+class PathPoint(Deletable):
+    def __init__(self, x, y, pathImg: str, enemy, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+        self.rendered = True
+        self.owner = enemy
+
+    def __eq__(self, other):
+        if self.center == other.center:
+            return True
+        return False
+
+    def onDragging(self):
+        if self.rendered:
+            x, y = pygame.mouse.get_pos()
+            self.setPos([x - self.hitbox[2] / 2, y - self.hitbox[3] / 2])
+            return 1
+
+    def onLeftClickHold(self):
+        if self.rendered:
+            x, y = pygame.mouse.get_pos()
+            self.setPos([x - self.hitbox[2] / 2, y - self.hitbox[3] / 2])
+            return 1
+
+
+class PathChain:
+    def __init__(self, startX, startY, enemy, color=(255, 100, 20)):
+        self.owner = enemy
+        self.pathPoints = [PathPoint(startX, startY, "./Graphics/pathPointAdd.png", self.owner)]
+        self.color = color
+        self.pathType = "repeat"
+
+    def addPoint(self):
+        point = PathPoint(self.pathPoints[-1].hitbox.x + 100, self.pathPoints[-1].hitbox.y,
+                          "./Graphics/pathPointAdd.png", self.owner)
+        self.pathPoints.append(point)
+        return point
+
+    def delete(self, index):
+        del self.pathPoints[index]
+
+    def switchPathType(self):
+        self.pathType = "repeat" if self.pathType == "reverse" else "reverse"
+
