@@ -1,5 +1,6 @@
 import pygame
 import csv
+import shutil
 import cv2
 import numpy as np
 from PIL import Image
@@ -84,9 +85,31 @@ class Level(LevelTemplate):
 class LevelToEdit(LevelTemplate):
     def __init__(self):
         super().__init__()
+        self.key = None
+        self.levelPath = ""
+        self.Enemies = []
+        self.Coins = []
 
     def setLayout(self, pathToLayout):
         self.layout = pygame.image.load(pathToLayout).convert()
 
     def saveLevel(self, name: str):
-        pass
+        try:
+            shutil.copy2(self.levelPath, f"./Levels")
+        except shutil.SameFileError:
+            pass
+        with open(f"./Levels/{name}.txt", "w+") as f:
+            f.write(f"layoutPath,{self.levelPath}\n")
+            f.write(f"playerStartPosition,{self.playerStartPosition[0]},{self.playerStartPosition[1]}\n")
+            f.write(f"checkpointRespawnPosition,{self.checkpointRespawnPosition[0]},{self.checkpointRespawnPosition[1]}\n")
+            for simpleEnemy in self.Enemies:
+                r = f"simpleEnemy,{simpleEnemy.hitbox.x},{simpleEnemy.hitbox.y},"
+                for pathPoint in simpleEnemy.path.pathPoints:
+                    x = pathPoint.hitbox.x - simpleEnemy.hitbox.x
+                    y = pathPoint.hitbox.y - simpleEnemy.hitbox.y
+                    r += f"{x},{y},"
+                r += f"{simpleEnemy.path.pathType}"
+                f.write(f"{r}\n")
+            for coin in self.Coins:
+                f.write(f"coin,{coin.hitbox.x},{coin.hitbox.y}\n")
+            f.write(f"doorsAndKey,{self.Doors.hitbox.x},{self.Doors.hitbox.y},{self.key.hitbox.x},{self.key.hitbox.y}")

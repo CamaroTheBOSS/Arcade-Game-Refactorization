@@ -3,6 +3,13 @@ import easygui
 from sprite import Sprite
 
 
+class TextInputBox:
+    def __init__(self, x, y, w, h):
+        self.box = pygame.Rect(x, y, w, h)
+        self.active = False
+        self.text = "Level name"
+
+
 class Button(Sprite):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg)
@@ -14,9 +21,20 @@ class Button(Sprite):
         else:
             self.text = pygame.font.SysFont('Calibri', 30, bold=True).render(text, False, (255, 255, 255))
 
+        self.strText = text
         # dx, dy for text translation relative to the img graphic
         self.dx = dx
         self.dy = dy
+
+    def changeText(self, text, font=None):
+        self.strText = text
+        if font is not None:
+            self.text = font.render(text, False, (255, 255, 255))
+        else:
+            self.text = pygame.font.SysFont('Calibri', 30, bold=True).render(text, False, (255, 255, 255))
+
+    def changeFont(self, font=None):
+        self.text = font.render(self.strText, False, (255, 255, 255))
 
     def show(self, window: pygame.Surface):
         window.blit(self.img, (self.hitbox.x, self.hitbox.y))
@@ -109,6 +127,15 @@ class ImportLayoutButton(Button):
         return pathToLayout
 
 
+class SaveLevelButton(Button):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+    def onLeftClickDown(self):
+
+        return 1
+
+
 class AddEnemyButton(Button):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
@@ -185,6 +212,11 @@ class KeyButton(DraggingObjectButton):
 
 
 class DoorsButton(DraggingObjectButton):
+    def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
+        super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
+
+
+class CheckPointSpawnerButton(DraggingObjectButton):
     def __init__(self, x, y, pathImg: str, text="", font=None, dx=0, dy=0):
         super().__init__(x, y, pathImg, text=text, font=font, dx=dx, dy=dy)
 

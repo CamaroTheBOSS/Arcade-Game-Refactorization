@@ -2,7 +2,8 @@ import sys
 import pygame
 from level import LevelToEdit
 from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton, \
-    DeleteButton, Deletable, AddPathPointButton, EnemyButton, PathPoint, SwitchPathTypeButton
+    DeleteButton, Deletable, AddPathPointButton, EnemyButton, PathPoint, SwitchPathTypeButton, TextInputBox, \
+    SaveLevelButton, CheckPointSpawnerButton, CoinButton
 
 
 class LevelEditor:
@@ -18,6 +19,7 @@ class LevelEditor:
 
         # Buttons
         self.importLayout = ImportLayoutButton(390, 100, "./Graphics/button.png", "Import layout", self.font, 40, 16)
+        self.saveLevel = SaveLevelButton(735, 735, "./Graphics/button.png", "Save level", self.font, 60, 16)
         self.enemyAdder = AddEnemyButton(10, 730, "./Graphics/enemy.png", "Add enemy", self.smallFont, 40, 10)
         self.pathPointAdder = AddPathPointButton(200, 730, "./Graphics/pathPointAdd.png", "Add path point",
                                                  self.smallFont, 40, 10)
@@ -28,25 +30,56 @@ class LevelEditor:
         self.playerButton = PlayerButton(100, 100, "./Graphics/player.png")
         self.keyButton = KeyButton(100, 150, "./Graphics/key.png")
         self.doorsButton = DoorsButton(100, 200, "./Graphics/doors.png")
+        self.checkPointSpawner = CheckPointSpawnerButton(200, 100, "./Graphics/checkPointSpawn.png")
 
         # Draggable and selectable objects containers
-        self.draggable = [self.playerButton,  self.keyButton, self.doorsButton]
-        self.selectable = [self.playerButton, self.keyButton, self.doorsButton]
+        self.draggable = [self.playerButton,  self.keyButton, self.doorsButton, self.checkPointSpawner]
+        self.selectable = [self.playerButton, self.keyButton, self.doorsButton, self.checkPointSpawner]
         self.selectPNG = pygame.image.load("./Graphics/select32x32.png").convert_alpha()
 
         # Level's data to save
+        self.levelNameBox = TextInputBox(350, 775, 200, 35)
         self.level = LevelToEdit()
 
     def addLayoutEvent(self, event):
         pathToLayout = self.importLayout.leftClickDown(event)
         if pathToLayout:
+            self.level.levelPath = pathToLayout
             self.level.setLayout(pathToLayout)
             if any(ext in pathToLayout[-3:] for ext in ["jpg", "png"]):
                 if self.level.layout.get_height() != self.screenH - 100 or \
                         self.level.layout.get_width() != self.screenW:
                     self.level.layout = None
                 else:
-                    self.importLayout.setPos([-300, -300])
+                    self.importLayout.img = pygame.transform.scale(self.importLayout.img, (110, 40))
+                    self.importLayout.hitbox = self.importLayout.img.get_rect()
+                    self.importLayout.changeFont(self.smallFont)
+                    self.importLayout.setPos([590, 770])
+                    self.importLayout.dx = 8
+                    self.importLayout.dy = 12
+
+    def saveLevelEvent(self, event):
+        saveLevel = self.saveLevel.leftClickDown(event)
+        if saveLevel:
+            if self.level.layout is not None:
+                if self.levelNameBox.text != "":
+                    self.level.playerStartPosition = (self.playerButton.hitbox.x,
+                                                      self.playerButton.hitbox.y)
+                    self.level.checkpointRespawnPosition = (self.checkPointSpawner.hitbox.x,
+                                                            self.checkPointSpawner.hitbox.y)
+                    self.level.Enemies = []
+                    self.level.Coins = []
+                    self.level.Doors = None
+                    for obj in self.draggable:
+                        if isinstance(obj, EnemyButton):
+                            self.level.Enemies.append(obj)
+                        elif isinstance(obj, CoinButton):
+                            self.level.Coins.append(obj)
+                        elif isinstance(obj, DoorsButton):
+                            self.level.Doors = obj
+                        elif isinstance(obj, KeyButton):
+                            self.level.key = obj
+                    self.level.saveLevel(self.levelNameBox.text)
 
     def addEnemyEvent(self, event):
         newEnemy = self.enemyAdder.leftClickDown(event)
@@ -151,6 +184,18 @@ class LevelEditor:
                 return 1
         return 0
 
+    def textInputBoxEvent(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.levelNameBox.active = True if self.levelNameBox.box.collidepoint(event.pos) else False
+        if event.type == pygame.KEYDOWN:
+            if self.levelNameBox.active:
+                if event.key == pygame.K_RETURN:
+                    self.levelNameBox.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.levelNameBox.text = self.levelNameBox.text[:-1]
+                else:
+                    self.levelNameBox.text += event.unicode
+
     def update(self):
         self.window.fill((0, 0, 0))
 
@@ -159,6 +204,8 @@ class LevelEditor:
             self.importLayout.show(self.window)
         else:
             self.window.blit(self.level.layout, (0, 0))
+            self.saveLevel.show(self.window)
+            self.importLayout.show(self.window)
 
         # Render buttons for adding enemies and coins
         self.enemyAdder.show(self.window)
@@ -183,16 +230,19 @@ class LevelEditor:
                         enemy = selectable.owner if isinstance(selectable, PathPoint) else selectable
                         if enemy.path.pathType == "repeat":
                             pygame.draw.line(self.window, (255, 100, 20), enemy.path.pathPoints[0].center,
-                                             enemy.path.pathPoints[-1].center)
+                                             enemy.path.pathPoints[-1].center, width=3)
                         for i in range(len(enemy.path.pathPoints) - 1):
                             point1 = enemy.path.pathPoints[i]
                             point2 = enemy.path.pathPoints[i + 1]
-                            pygame.draw.line(self.window, (255, 100, 20), point1.center, point2.center)
+                            pygame.draw.line(self.window, (255, 100, 20), point1.center, point2.center, width=3)
                             self.window.blit(point2.img, (point2.hitbox.x, point2.hitbox.y))
                             self.window.blit(self.font.render(f"{i + 1}", False, (80, 20, 255)),
                                              (point2.center[0] - 6, point2.center[1] - 14))
 
-
+        # Render level name box
+        self.window.blit(self.font.render(self.levelNameBox.text, True, (255, 255, 255)),
+                         (self.levelNameBox.box.x + 5, self.levelNameBox.box.y + 5))
+        pygame.draw.rect(self.window, (100, 100, 255), self.levelNameBox.box, 2)
 
         pygame.display.flip()
 
@@ -214,5 +264,7 @@ class LevelEditor:
                 self.selectingEvent(event)
                 self.deleteObjectEvent(event)
                 self.switchPathTypeEvent(event)
+                self.saveLevelEvent(event)
+                self.textInputBoxEvent(event)
 
             self.update()
