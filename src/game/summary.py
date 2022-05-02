@@ -36,4 +36,4 @@ class SummaryWindow:
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                    return
+                    return "chooseLevel"

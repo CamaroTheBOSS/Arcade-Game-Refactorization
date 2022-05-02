@@ -1,5 +1,0 @@
-layoutPath,./Levels/1.png
-playerStartPosition,48,50
-checkpointRespawnPosition,313,332
-simpleEnemy,492,205,0,0,repeat
-doorsAndKey,45,319,50,197

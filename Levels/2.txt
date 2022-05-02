@@ -1,4 +1,0 @@
-layoutPath,./Levels/2.png
-playerStartPosition,106,51
-checkpointRespawnPosition,312,326
-doorsAndKey,496,369,51,306

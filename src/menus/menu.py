@@ -72,4 +72,6 @@ class Menu:
                             return "editLevel"
                         elif self.optionPointer == 2:
                             sys.exit()
+                    elif event.key == pygame.K_ESCAPE:
+                        sys.exit()
             self.update()

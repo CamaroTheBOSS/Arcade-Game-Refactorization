@@ -192,7 +192,11 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     print(pygame.key.name(event.key))
+                    if event.key == pygame.K_ESCAPE:
+                        return "chooseLevel"
             self.HUD.updateText(self.font)
             self.player.collectData()
             self.playerCollisions()
             self.update()
+
+        return "WIN"

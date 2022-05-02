@@ -97,18 +97,26 @@ class LevelToEdit(LevelTemplate):
 
     def saveLevel(self, name: str):
         try:
-            shutil.copy2(self.levelPath, f"./Levels")
+            shutil.copy2(self.levelPath, f"./")
         except shutil.SameFileError:
             pass
         normalized_path = os.path.normpath(self.levelPath)
         fileName = normalized_path.split(os.sep)[-1]
         fileFormat = fileName[-3:]
-
+        os.rename(f"./{fileName}", f"./{name}.{fileFormat}")
         try:
-            os.rename(f"./Levels/{fileName}", f"./Levels/{name}.{fileFormat}")
-        except FileExistsError:
+            shutil.copy2(f"./{name}.{fileFormat}", f"./Levels")
+        except shutil.SameFileError:
             os.remove(f"./Levels/{name}.{fileFormat}")
-            os.rename(f"./Levels/{fileName}", f"./Levels/{name}.{fileFormat}")
+            shutil.copy2(f"./{name}.{fileFormat}", f"./Levels")
+
+        os.remove(f"./{name}.{fileFormat}")
+
+        # try:
+        #     os.rename(f"./Levels/{fileName}", f"./Levels/{name}.{fileFormat}")
+        # except FileExistsError:
+        #     os.remove(f"./Levels/{name}.{fileFormat}")
+        #     os.rename(f"./Levels/{fileName}", f"./Levels/{name}.{fileFormat}")
 
         with open(f"./Levels/{name}.txt", "w+") as f:
             f.write(f"layoutPath,./Levels/{name}.{fileFormat}\n")
