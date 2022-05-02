@@ -1,8 +1,4 @@
 layoutPath,./Levels/2.png
-playerStartPosition,110,90
-checkpointRespawnPosition,485,370
-simpleEnemy,200,200,100,0,100,100,0,100,0,0,repeat
-simpleEnemy,500,500,100,0,100,-100,0,-100,0,0,repeat
-coin,200,200
-coin,600,200
-coin,500,400
+playerStartPosition,106,51
+checkpointRespawnPosition,312,326
+doorsAndKey,496,369,51,306

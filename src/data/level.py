@@ -2,18 +2,19 @@ import pygame
 import csv
 import shutil
 import cv2
+import os
 import numpy as np
 from PIL import Image
-from enemies import *
-from collectable import *
-from sprite import ObjectsContainer, Sprite
+from data.enemies import *
+from data.collectable import *
+from data.sprite import ObjectsContainer, Sprite
 
 
 class ColorSet:
     def __init__(self):
-        self.wall = np.array([0, 0, 0, 255])             # Black
-        self.win = np.array([34, 177, 76, 255])          # Green
-        self.checkpoint = np.array([255, 127, 39, 255])  # Orange
+        self.wall = np.array([0, 0, 0])             # Black
+        self.win = np.array([34, 177, 76])          # Green
+        self.checkpoint = np.array([255, 127, 39])  # Orange
 
 
 class LevelTemplate:
@@ -53,6 +54,7 @@ class Level(LevelTemplate):
                 if line[0] == 'layoutPath':
                     level_np = Image.open(line[1])
                     self.layoutData = np.transpose(np.asarray(level_np), axes=(1, 0, 2))
+                    self.layoutData = self.layoutData[:, :, :3]
                     self.layout = pygame.image.load(line[1]).convert()
                     self.wallData = cv2.imread(line[1])
                     self.wallData = np.transpose(cv2.cvtColor(self.wallData, cv2.COLOR_RGB2GRAY))
@@ -98,8 +100,18 @@ class LevelToEdit(LevelTemplate):
             shutil.copy2(self.levelPath, f"./Levels")
         except shutil.SameFileError:
             pass
+        normalized_path = os.path.normpath(self.levelPath)
+        fileName = normalized_path.split(os.sep)[-1]
+        fileFormat = fileName[-3:]
+
+        try:
+            os.rename(f"./Levels/{fileName}", f"./Levels/{name}.{fileFormat}")
+        except FileExistsError:
+            os.remove(f"./Levels/{name}.{fileFormat}")
+            os.rename(f"./Levels/{fileName}", f"./Levels/{name}.{fileFormat}")
+
         with open(f"./Levels/{name}.txt", "w+") as f:
-            f.write(f"layoutPath,{self.levelPath}\n")
+            f.write(f"layoutPath,./Levels/{name}.{fileFormat}\n")
             f.write(f"playerStartPosition,{self.playerStartPosition[0]},{self.playerStartPosition[1]}\n")
             f.write(f"checkpointRespawnPosition,{self.checkpointRespawnPosition[0]},{self.checkpointRespawnPosition[1]}\n")
             for simpleEnemy in self.Enemies:

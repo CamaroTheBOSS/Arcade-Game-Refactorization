@@ -1,8 +1,5 @@
-layoutPath,C:\Users\CamaroTheBOSS\Desktop\Code projects\Python\Arcade Game Refactorization\Levels\1.png
-playerStartPosition,162,133
-checkpointRespawnPosition,59,348
-simpleEnemy,494,649,0,0,100,0,200,0,reverse
-simpleEnemy,78,632,0,0,100,0,100,-81,0,-81,repeat
-coin,532,234
-coin,534,393
-doorsAndKey,416,309,170,356
+layoutPath,./Levels/1.png
+playerStartPosition,48,50
+checkpointRespawnPosition,313,332
+simpleEnemy,492,205,0,0,repeat
+doorsAndKey,45,319,50,197

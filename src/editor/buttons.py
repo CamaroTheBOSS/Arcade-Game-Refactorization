@@ -1,6 +1,6 @@
 import pygame
 import easygui
-from sprite import Sprite
+from data.sprite import Sprite
 
 
 class TextInputBox:

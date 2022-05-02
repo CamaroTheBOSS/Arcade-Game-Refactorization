@@ -1,4 +1,4 @@
-from sprite import Sprite
+from data.sprite import Sprite
 
 
 class Player(Sprite):

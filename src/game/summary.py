@@ -1,6 +1,6 @@
 import sys
 import pygame
-from HUD import HUDelement
+from data.HUD import HUDelement
 
 
 class SummaryWindow:

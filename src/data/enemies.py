@@ -1,4 +1,4 @@
-from sprite import MovingSprite
+from data.sprite import MovingSprite
 
 
 class SimpleEnemy(MovingSprite):

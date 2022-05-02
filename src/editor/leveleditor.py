@@ -1,7 +1,7 @@
 import sys
 import pygame
-from level import LevelToEdit
-from buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton, \
+from data.level import LevelToEdit
+from editor.buttons import ImportLayoutButton, AddEnemyButton, AddCoinButton, PlayerButton, KeyButton, DoorsButton, \
     DeleteButton, Deletable, AddPathPointButton, EnemyButton, PathPoint, SwitchPathTypeButton, TextInputBox, \
     SaveLevelButton, CheckPointSpawnerButton, CoinButton
 

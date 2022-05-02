@@ -1,9 +1,10 @@
 import sys
 import pygame
-from HUD import GameHUD
-from audio import Audio
-from level import Level
-from player import Player
+from data.HUD import GameHUD
+from data.audio import Audio
+from data.level import Level
+from data.player import Player
+import os
 
 
 # function used for collision detection
@@ -35,6 +36,7 @@ class Game:
         self.audio.DoorOpening = pygame.mixer.Sound("./Audio/door.mp3")
 
     def loadLevel(self, file):
+        print("IN GAME FILE")
         self.level = Level(file)
         self.player = Player(self.level.playerStartPosition[0],
                              self.level.playerStartPosition[1],

@@ -1,7 +1,9 @@
 import pygame
-from game import Game
-from leveleditor import LevelEditor
-from summary import SummaryWindow
+from game.game import Game
+from editor.leveleditor import LevelEditor
+from game.summary import SummaryWindow
+import sys
+import os
 
 
 class PyWindow:
@@ -9,7 +11,7 @@ class PyWindow:
         pygame.init()
         self.window = pygame.display.set_mode((1024, 820))
         self.gameWindow = Game(self.window)
-        self.menuWindow = Menu()
+        self.menuWindow = Menu(self.window)
         self.levelEditor = LevelEditor(self.window)
         self.summaryWindow = SummaryWindow(self.window)
 
@@ -26,7 +28,45 @@ class PyWindow:
 
 
 class Menu:
-    pass
+    def __init__(self, window):
+        self.window = window
+        self.optionPointer = 0
+        self.options = []
+        self.running = False
+        self.clock = pygame.time.Clock()
+
+    def selectUp(self):
+        if self.optionPointer >= len(self.options) - 1:
+            self.optionPointer = 0
+        else:
+            self.optionPointer += 1
+
+    def selectDown(self):
+        if self.optionPointer == 0:
+            self.optionPointer = len(self.options) - 1
+        else:
+            self.optionPointer -= 1
+
+    def update(self):
+        pass
+
+    def run(self):
+        self.running = True
+
+        # Editor main loop
+        while self.running:
+            self.clock.tick(60 * 3)
+            # Check for events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP or event.key == pygame.K_w:
+                        self.selectUp()
+                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                        self.selectDown()
+
+            self.update()
 
 
 if __name__ == '__main__':
