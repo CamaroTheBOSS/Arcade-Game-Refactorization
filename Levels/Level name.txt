@@ -1,6 +1,0 @@
-layoutPath,./Levels/Level name.png
-playerStartPosition,141,49
-checkpointRespawnPosition,513,99
-simpleEnemy,191,203,0,0,repeat
-coin,206,450
-doorsAndKey,144,354,48,323
