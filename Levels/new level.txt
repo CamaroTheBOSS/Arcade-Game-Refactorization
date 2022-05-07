@@ -1,0 +1,19 @@
+layoutPath,./Levels/new level.png
+playerStartPosition,83,58
+checkpointRespawnPosition,85,509
+simpleEnemy,426,73,0,0,224,0,repeat
+simpleEnemy,650,37,0,0,-225,0,repeat
+simpleEnemy,866,76,0,0,0,-45,69,-45,69,0,repeat
+simpleEnemy,397,453,0,0,0,-73,repeat
+simpleEnemy,358,381,0,0,0,72,repeat
+simpleEnemy,319,452,0,0,0,-70,repeat
+simpleEnemy,179,637,0,0,177,-1,repeat
+simpleEnemy,356,586,0,0,-177,0,repeat
+simpleEnemy,861,639,0,0,0,-56,73,-56,reverse
+coin,540,74
+coin,540,39
+coin,323,53
+coin,907,284
+coin,719,639
+coin,358,442
+doorsAndKey,331,198,926,619
